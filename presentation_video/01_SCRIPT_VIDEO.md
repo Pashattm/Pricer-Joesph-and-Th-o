@@ -24,7 +24,7 @@ Le projet est présenté collectivement. La répartition ci-dessous organise la 
 
 **Repère :** [`main.py` — `api_autocall`, ligne 328](../main.py#L328).
 
-« L’application comporte une interface et un serveur Python. Le HTML définit les champs, le CSS leur apparence et le JavaScript les interactions. Quand on clique sur Calculer, JavaScript envoie les paramètres au serveur Flask dans main.py. Celui-ci les vérifie, appelle le moteur et renvoie une réponse JSON. strutu_engine.py calcule les prix ; market_data_engine.py récupère le marché ; volatility_engine.py calcule la volatilité historique. Cette séparation permet de tester les calculs sans ouvrir le navigateur. »
+« L’application comporte une interface et un serveur Python. Le HTML définit les champs, le CSS leur apparence et le JavaScript les interactions. Quand on clique sur Calculer, JavaScript envoie les paramètres au serveur Flask dans main.py. Celui-ci les vérifie, appelle le moteur et renvoie une réponse JSON. strutu_engine.py calcule les prix ; market_data_engine.py récupère le marché ; volatility_engine.py calcule la volatilité historique.»
 
 ### 01:15–02:00 — Présenter les données de marché
 
