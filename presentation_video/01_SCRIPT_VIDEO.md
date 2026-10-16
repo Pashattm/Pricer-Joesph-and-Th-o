@@ -42,7 +42,7 @@ Le projet est présenté collectivement. La répartition ci-dessous organise la 
 
 **Repère :** [`volatility_engine.py` — `log_returns`, ligne 4](../volatility_engine.py#L4).
 
-« Pour chaque paire de cours successifs, nous calculons le logarithme du ratio des prix. prices[1:] contient les prix à partir du deuxième et prices[:-1] tous les prix sauf le dernier : les deux tableaux mettent donc chaque prix en face du précédent. Ensuite, nous prenons l’écart-type de ces rendements avec ddof égal à un, puis nous multiplions par racine de 252 pour annualiser des observations journalières. Le résultat est un décimal : 0,25 veut dire 25 %. La volatilité mesure la dispersion, pas le sens futur du marché. Dans cette copie, il n’y a pas de calcul EWMA. »
+« Pour chaque paire de cours successifs, nous calculons le logarithme du ratio des prix. prices[1:] contient les prix à partir du deuxième et prices[:-1] tous les prix sauf le dernier : les deux tableaux mettent donc chaque prix en face du précédent. Ensuite, nous prenons l’écart-type de ces rendements avec ddof égal à un, puis nous multiplions par racine de 252 pour annualiser des observations journalières. Le résultat est un décimal : 0,25 veut dire 25 %. La volatilité mesure la dispersion, pas le sens futur du marché. »
 
 **Transition de Joseph vers Théo :** « Cette volatilité devient sigma dans le simulateur. Je te laisse montrer comment elle intervient dans les trajectoires. »
 
