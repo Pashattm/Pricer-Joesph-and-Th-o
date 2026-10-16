@@ -6,7 +6,7 @@ Durée indicative de cette version détaillée : **18 à 22 minutes**, à mesure
 
 ## Introduire votre collaboration
 
-Théo : « Dans le cadre de notre travail de groupe, nous présentons un pricer de produits structurés. Je vais expliquer son architecture, les données de marché et le Phoenix. Joseph présentera la volatilité, puis le Plain avec et sans rappel et sa valorisation. Nous montrerons ensuite le fonctionnement de l’application. »
+Théo : « Dans le cadre de notre travail de groupe, nous présentons un pricer de produits structurés. Je vais expliquer son architecture, les données de marché et le Phoenix. Joseph présentera la volatilité, puis le Plain avec et sans rappel et sa valorisation. »
 
 Le projet est présenté collectivement. La répartition ci-dessous organise la parole ; elle n’attribue pas la propriété des fichiers. Les explications décrivent la version actuelle : sans rappel, les coupons sont conditionnés au niveau final.
 
