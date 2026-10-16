@@ -52,7 +52,7 @@ Ensuite, on teste le seuil du coupon. Sans mémoire, si le seuil n’est pas att
 
 Par exemple, avec un coupon de 4 %, si on manque le premier mais qu’on touche le deuxième, on reçoit 8 % avec mémoire, contre 4 % sans mémoire.
 
-Si le produit est rappelé avant maturité, on rend aussi le capital et on arrête ce scénario. Sinon, le capital est traité à la fin selon la barrière de protection. Joseph va montrer la différence avec le Plain, où les coupons sont payés d’un coup.
+Si le produit est rappelé avant maturité, on rend aussi le capital et on arrête ce scénario. Sinon, le capital est traité à la fin selon la barrière de protection.
 
 ## 7. Expliquer le Plain — Joseph
 
