@@ -343,8 +343,6 @@ Le moteur renvoie aussi les statistiques des mêmes scénarios. Par exemple, dat
 
 La probabilité de perte concerne le capital, avant les coupons. Et la marge affichée, c’est simplement cent moins le prix : ce n’est pas un bénéfice net.
 
-Le graphique, lui, montre ce qu’on reçoit à maturité si le produit n’a pas été rappelé. Ce sont des montants futurs, pas le prix aujourd’hui. Pour le Phoenix, il ne montre que le dernier coupon, pas les coupons déjà reçus ni tout l’effet mémoire.
-
 
 **Code à montrer — indications non destinées à être lues :**
 
@@ -368,9 +366,6 @@ On revient dans main.py. La page envoie les paramètres ici. On vérifie les don
 Pour le Plain, on lit aussi has_autocall et on le transmet à la fonction que Joseph a montrée. Les deux étoiles devant arguments servent à passer les valeurs du dictionnaire comme paramètres nommés.
 
 Après le calcul, on renvoie les résultats en JSON. Dans le HTML, fetch récupère la réponse, puis les fonctions d’affichage mettent à jour les indicateurs et le graphique. Le JavaScript gère donc les échanges et l’affichage ; les calculs financiers restent en Python.
-
-Je montre rapidement la case mémoire du Phoenix, puis je décoche le rappel : les coupons restent périodiques, mais le produit va jusqu’à maturité. Je montre aussi les deux champs du bonus, son seuil et son montant. Le bonus n’est payé qu’à la fin, si sa condition est remplie et si le produit est encore en vie. Ensuite Joseph va comparer le Plain avec et sans rappel.
-
 
 **Code à montrer — indications non destinées à être lues :**
 
