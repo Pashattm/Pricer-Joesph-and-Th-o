@@ -16,7 +16,7 @@ Le projet est présenté collectivement. La répartition ci-dessous organise la 
 
 **Intervenant : Théo. À l’écran :** Application : menu et formulaire Phoenix.
 
-« Nous présentons un pricer de produits structurés à un seul sous-jacent. Il couvre un Phoenix à coupons conditionnels et un Plain à coupons accumulés, avec une option pour désactiver le rappel. Notre objectif est de transformer des paramètres de marché et des règles contractuelles en une valeur théorique, puis d’expliquer les scénarios associés. Nous allons suivre le parcours des données jusqu’au résultat. »
+« Nous présentons un pricer de produits structurés à un seul sous-jacent. Il couvre un Phoenix à coupons conditionnels et un Plain à coupons accumulés. Notre objectif est de transformer des paramètres de marché et des règles contractuelles en une valeur théorique, puis d’expliquer les scénarios associés. Nous allons suivre le parcours des données jusqu’au résultat. »
 
 ### Expliquer l’architecture
 
