@@ -1,57 +1,93 @@
-# Script oral — Théo et Joseph
+# Script oral guidé par le code — Théo et Joseph
 
-Version plus naturelle : les phrases servent de repères. Vous pouvez changer les mots et vous arrêter pour montrer le code. Les indications « À l’écran » ne se lisent pas. Prévoir environ **15 à 18 minutes**, selon les manipulations et le rythme, à vérifier en répétition.
+Chaque écran suit le même ordre : **ouvrir les lignes → les montrer → donner l’explication juste dessous**. Les indications ne se lisent pas. Garder le bloc visible pendant son explication, puis passer au suivant. Les lignes correspondent au code actuel. Les blocs sont volontairement courts ; ne pas lire les commentaires Python à voix haute. Prévoir environ 18 à 22 minutes avec les manipulations, à mesurer en répétition.
 
 ## 1. Présenter le projet — Théo
 
-**À l’écran :** Application.
+### Écran 1.1
 
-On va vous présenter notre pricer de produits structurés. On a deux produits : le Phoenix et le Plain, avec ou sans rappel. On va vous montrer comment on passe des données de marché au prix, puis faire un calcul dans l’application.
+**Montrer : l’application.**
 
+**À dire en pointant ce passage :**
 
-**Code à montrer — indications non destinées à être lues :**
+On va vous présenter notre pricer. On a un Phoenix et un Plain, avec ou sans rappel. On va suivre les données jusqu’au prix, puis montrer un calcul dans l’application.
 
-**Ouvrir [templates/index.html, ligne 156](../templates/index.html#L156)** — lignes 156 à 156.
+## 2. Les imports et le rôle du serveur — Théo
 
-```html
-          <option value="autocall_plain">Autocall Plain — coupons accumulés</option>
-```
+### Écran 2.1
 
-**Pendant la vidéo :** privilégier ici la page de l’application ; le HTML est un repère complémentaire si vous voulez montrer la commande correspondante.
-
-## 2. Montrer les fichiers — Théo
-
-**À l’écran :** main.py : imports en haut du fichier.
-
-Pour se repérer, main.py fait le lien entre la page et les calculs. Market data récupère les données, volatility calcule la volatilité, et strutu_engine contient la simulation et les règles des produits. Ici, les imports permettent de réutiliser les fonctions de ces fichiers.
-
-
-**Code à montrer — indications non destinées à être lues :**
-
-**Ouvrir [main.py, ligne 4](../main.py#L4)** — lignes 4 à 6.
+**Montrer [main.py, ligne 4](../main.py#L4) — lignes 4 à 4.**
 
 ```python
 from market_data_engine import search_tickers, get_spot, get_devise, get_vix, get_vol_historique
+```
+
+**À dire en pointant ce passage :**
+
+Ici, on récupère les fonctions de marché. main.py peut les appeler sans recopier leur code.
+
+### Écran 2.2
+
+**Montrer [main.py, ligne 5](../main.py#L5) — lignes 5 à 6.**
+
+```python
 from strutu_engine import (analyse_phoenix, payoff_phoenix_maturite,
                            analyse_autocall_plain)
 ```
 
-## 3. Récupérer les cours — Théo
+**À dire en pointant ce passage :**
 
-**À l’écran :** market_data_engine.py : get_historical_prices et get_vol_historique.
+Juste en dessous, on importe les fonctions qui calculent le Phoenix et le Plain. main.py fait le lien avec la page : il reçoit les paramètres, appelle ces fonctions et renvoie les résultats.
 
-Ici, on récupère les cours sur Yahoo. On garde les clôtures ajustées et on retire les valeurs manquantes. Ensuite, dans get_vol_historique, on passe ces cours à historical_volatility. Cette fonction est importée depuis volatility_engine : on ne refait donc pas le calcul ici. On multiplie juste le résultat par cent pour l’afficher en pourcentage. Joseph va vous montrer ce qu’il y a dans cette fonction.
+## 3. Charger les cours et appeler la volatilité — Théo
 
+### Écran 3.1
 
-**Code à montrer — indications non destinées à être lues :**
-
-**Ouvrir [market_data_engine.py, ligne 3](../market_data_engine.py#L3)** — lignes 3 à 3.
+**Montrer [market_data_engine.py, ligne 3](../market_data_engine.py#L3) — lignes 3 à 3.**
 
 ```python
 from volatility_engine import historical_volatility
 ```
 
-**Ouvrir [market_data_engine.py, ligne 89](../market_data_engine.py#L89)** — lignes 89 à 101.
+**À dire en pointant ce passage :**
+
+Cet import est important : le calcul de volatilité est dans l’autre fichier. Ici, on va seulement l’appeler. Joseph va vous montrer son contenu juste après.
+
+### Écran 3.2
+
+**Montrer [market_data_engine.py, ligne 54](../market_data_engine.py#L54) — lignes 54 à 56.**
+
+```python
+    data = asset.history(
+        period=periode,
+        auto_adjust=True
+```
+
+**À dire en pointant ce passage :**
+
+Avec history, on demande les cours sur la période choisie. auto_adjust=True demande les cours ajustés.
+
+### Écran 3.3
+
+**Montrer [market_data_engine.py, ligne 60](../market_data_engine.py#L60) — lignes 60 à 66.**
+
+```python
+    if data.empty:
+        raise ValueError(
+            f"Aucune donnée historique disponible pour {ticker}"
+        )
+
+    # 4. Extraction des cours de clôture
+    prices = data["Close"].dropna()
+```
+
+**À dire en pointant ce passage :**
+
+Si Yahoo ne renvoie rien, on arrête avec un message. Sinon, on garde la colonne Close et on retire les valeurs manquantes avec dropna.
+
+### Écran 3.4
+
+**Montrer [market_data_engine.py, ligne 89](../market_data_engine.py#L89) — lignes 89 à 98.**
 
 ```python
     cours = get_historical_prices(ticker, periode)
@@ -64,144 +100,201 @@ from volatility_engine import historical_volatility
 
     # 3. Calcul de la volatilité historique
     vol = historical_volatility(cours)
+```
 
-    # 4. Conversion en pourcentage
+**À dire en pointant ce passage :**
+
+Dans get_vol_historique, on récupère ces cours. On exige au moins vingt observations, puis cette ligne appelle la fonction importée au début.
+
+### Écran 3.5
+
+**Montrer [market_data_engine.py, ligne 101](../market_data_engine.py#L101) — lignes 101 à 101.**
+
+```python
     return float(vol * 100)
 ```
 
-**Ouvrir [market_data_engine.py, ligne 54](../market_data_engine.py#L54)** — lignes 54 à 66.
+**À dire en pointant ce passage :**
 
-```python
-    data = asset.history(
-        period=periode,
-        auto_adjust=True
-    )
+Elle renvoie un décimal. Ici, on multiplie par cent pour le formulaire : 0,25 devient 25 %.
 
-    # 3. Vérification des données
-    if data.empty:
-        raise ValueError(
-            f"Aucune donnée historique disponible pour {ticker}"
-        )
-
-    # 4. Extraction des cours de clôture
-    prices = data["Close"].dropna()
-```
+**Passage de parole :** « Joseph, tu peux nous montrer comment cette fonction calcule la volatilité ? »
 
 ## 4. Calculer la volatilité — Joseph
 
-**À l’écran :** volatility_engine.py : log_returns et historical_volatility.
+### Écran 4.1
 
-Donc ici, on reçoit les cours que Théo vient de montrer. On commence par calculer les rendements. Avec prices[1:] et prices[:-1], on met chaque cours en face du précédent, puis on prend le logarithme du ratio. Avec trois cours, on obtient deux rendements.
+**Montrer [volatility_engine.py, ligne 21](../volatility_engine.py#L21) — lignes 21 à 21.**
 
-Ensuite, np.std calcule leur dispersion. Le ddof=1, c’est pour utiliser le nombre de rendements moins un dans le calcul de l’écart-type. Et on multiplie par racine de 252 pour passer d’une volatilité journalière à une volatilité annuelle.
+```python
+    prices = np.asarray(prices, dtype=float)
+```
 
-La fonction renvoie un décimal : 0,25, c’est 25 %. Il faut au moins trois cours pour ce calcul. Dans market data, on en demande vingt : c’est un minimum supplémentaire pour l’application.
+**À dire en pointant ce passage :**
 
-Cette volatilité va devenir sigma dans le simulateur. Théo, tu peux montrer où elle intervient ?
+On reçoit les cours montrés par Théo. Cette ligne les transforme en tableau de nombres pour travailler avec NumPy.
 
+### Écran 4.2
 
-**Code à montrer — indications non destinées à être lues :**
-
-**Ouvrir [volatility_engine.py, ligne 32](../volatility_engine.py#L32)** — lignes 32 à 32.
+**Montrer [volatility_engine.py, ligne 32](../volatility_engine.py#L32) — lignes 32 à 32.**
 
 ```python
     returns = np.log(prices[1:] / prices[:-1])
 ```
 
-**Ouvrir [volatility_engine.py, ligne 58](../volatility_engine.py#L58)** — lignes 58 à 79.
+**À dire en pointant ce passage :**
+
+Ici, on compare chaque prix au précédent. Le premier morceau commence au deuxième cours ; le second s’arrête à l’avant-dernier. On divise les deux, puis on prend le logarithme. Trois cours donnent donc deux rendements.
+
+### Écran 4.3
+
+**Montrer [volatility_engine.py, ligne 58](../volatility_engine.py#L58) — lignes 58 à 61.**
 
 ```python
     returns = log_returns(prices)
 
     # 2. Vérification du nombre de rendements
     if len(returns) < 2:
-        raise ValueError(
-        "Il faut au moins trois prix pour calculer la volatilité."
-    )
+```
 
-    # 3. Vérification du facteur d'annualisation
-    if annualization <= 0:
-        raise ValueError(
-        "Le facteur d'annualisation doit être positif."
-    )
+**À dire en pointant ce passage :**
 
-    # 4. Calcul de l'écart-type des rendements
+La fonction de volatilité appelle celle qu’on vient de voir. Elle demande au moins deux rendements, donc trois cours. Les vingt cours du module marché sont une exigence supplémentaire pour l’application.
+
+### Écran 4.4
+
+**Montrer [volatility_engine.py, ligne 73](../volatility_engine.py#L73) — lignes 73 à 73.**
+
+```python
     daily_volatility = np.std(returns, ddof=1)
+```
 
-    # 5. Annualisation
+**À dire en pointant ce passage :**
+
+np.std calcule la dispersion des rendements autour de leur moyenne. ddof=1 utilise le nombre de rendements moins un au dénominateur.
+
+### Écran 4.5
+
+**Montrer [volatility_engine.py, ligne 76](../volatility_engine.py#L76) — lignes 76 à 79.**
+
+```python
     annual_volatility = daily_volatility * np.sqrt(annualization)
 
     # 6. Retour en décimal
     return float(annual_volatility)
 ```
 
-## 5. Simuler les cours — Théo
+**À dire en pointant ce passage :**
 
-**À l’écran :** strutu_engine.py : simulate_observation_dates.
+On annualise avec racine de 252 pour des cours journaliers. Le résultat reste en décimal. C’est ce résultat que market data multiplie par cent pour l’affichage.
 
-On retrouve sigma ici. Le tableau prix contient une ligne par scénario, et une colonne par date, plus le cours de départ. Les deux-points dans prix[:, i], ça veut dire qu’on prend tous les scénarios à cette date.
+**Passage de parole :** « Cette volatilité devient sigma dans le moteur. Théo, tu peux montrer où elle intervient ? »
 
-À chaque étape, on calcule le temps écoulé, dt, puis on tire un choc aléatoire par scénario avec standard_normal. Le prochain cours dépend du taux, du dividende, de la volatilité et de ce choc. On simule sous une mesure risque-neutre, avec une dérive r moins q : ce n’est pas une prévision du cours de l’action.
+## 5. Créer les trajectoires — Théo
 
-Cette fonction renvoie seulement les cours. Ensuite, on applique les règles du Phoenix ou du Plain dessus. Le simulateur est commun aux deux.
+### Écran 5.1
 
-
-**Code à montrer — indications non destinées à être lues :**
-
-**Ouvrir [strutu_engine.py, ligne 29](../strutu_engine.py#L29)** — lignes 29 à 44.
+**Montrer [strutu_engine.py, ligne 29](../strutu_engine.py#L29) — lignes 29 à 31.**
 
 ```python
     n_dates = len(obs_dates)
     prix = np.zeros((n_simulations, n_dates + 1))
     prix[:, 0] = S0  # je fais partir tous les scénarios du même spot
+```
 
+**À dire en pointant ce passage :**
+
+On crée une ligne par scénario et une colonne par constat, plus une pour le départ. Ici, les deux-points veulent dire toutes les lignes : tous les scénarios commencent à S0.
+
+### Écran 5.2
+
+**Montrer [strutu_engine.py, ligne 33](../strutu_engine.py#L33) — lignes 33 à 37.**
+
+```python
     t_precedent = 0.0
     for i in range(n_dates):
         t = obs_dates[i]
         dt = t - t_precedent  # temps écoulé depuis la dernière obs
         Z = rng.standard_normal(n_simulations)  # je tire un choc par scénario
-        # mouvement brownien géométrique (j'ai repris la formule de mon Monte Carlo options)
+```
+
+**À dire en pointant ce passage :**
+
+À chaque date, dt mesure le temps écoulé. standard_normal tire un choc aléatoire par scénario.
+
+### Écran 5.3
+
+**Montrer [strutu_engine.py, ligne 39](../strutu_engine.py#L39) — lignes 39 à 42.**
+
+```python
         croissance = (r - q - sigma**2 / 2) * dt
         choc = sigma * np.sqrt(dt) * Z
         prix[:, i + 1] = prix[:, i] * np.exp(croissance + choc)
         t_precedent = t
+```
 
+**À dire en pointant ce passage :**
+
+On retrouve le sigma expliqué par Joseph. La croissance dépend du taux, du dividende et de la correction de variance. Le choc dépend de sigma et du tirage. Avec l’exponentielle, on obtient le nouveau cours à partir du précédent. C’est un modèle risque-neutre, pas une prévision de performance.
+
+### Écran 5.4
+
+**Montrer [strutu_engine.py, ligne 44](../strutu_engine.py#L44) — lignes 44 à 44.**
+
+```python
     return prix
 ```
 
-## 6. Appliquer les règles du Phoenix — Théo
+**À dire en pointant ce passage :**
 
-**À l’écran :** strutu_engine.py : _simuler_phoenix.
+On renvoie les cours, sans encore calculer de paiement. Le Phoenix et le Plain utilisent ce même simulateur, puis appliquent leurs propres règles.
 
-Pour le Phoenix, on regarde d’abord quels scénarios sont encore en vie. C’est actifs = ~rappele : on écarte ceux qui sont déjà terminés.
+## 6. Phoenix : coupons, mémoire, rappel et bonus — Théo
 
-Ensuite, on teste le seuil du coupon. Sans mémoire, si le seuil n’est pas atteint, le coupon est perdu. Avec mémoire, on le garde dans coupons_en_attente. Dès qu’un constat est favorable, on paie le stock, puis on le remet à zéro.
+### Écran 6.1
 
-Par exemple, avec un coupon de 4 %, si on manque le premier mais qu’on touche le deuxième, on reçoit 8 % avec mémoire, contre 4 % sans mémoire.
-
-Si le produit est rappelé avant maturité, on rend aussi le capital et on arrête ce scénario. Sinon, le capital est traité à la fin selon la barrière de protection. On peut aussi décocher le rappel : le Phoenix va alors jusqu’à maturité, mais les coupons continuent à être versés aux constats favorables, avec ou sans mémoire. Ce n’est donc pas le même fonctionnement que le Plain sans rappel, que Joseph va montrer.
-
-Il y a aussi le bonus final. On choisit son seuil et son montant. Si le produit n’a pas été rappelé et que le cours final atteint ce seuil, on ajoute le bonus au remboursement. Par exemple, avec une référence de 100, un seuil bonus à 110 et un bonus de 5 %, un cours final de 115 donne un bonus de 50 pour 1 000 investis. Le dernier coupon s’ajoute aussi si sa propre condition est remplie.
-
-Dans le code, k < n_dates réserve le rappel aux dates avant maturité. La dernière date passe par le remboursement final, ce qui permet justement de traiter le bonus. Joseph va maintenant montrer le Plain, où les coupons sont payés d’un coup.
-
-
-**Code à montrer — indications non destinées à être lues :**
-
-**Ouvrir [strutu_engine.py, ligne 86](../strutu_engine.py#L86)** — lignes 86 à 105.
+**Montrer [strutu_engine.py, ligne 86](../strutu_engine.py#L86) — lignes 86 à 86.**
 
 ```python
         actifs = ~rappele
+```
 
-        # je bloque le rappel à la dernière date, à maturité je passe par le remboursement final
-        # (sinon mon bonus ne serait jamais versé)
+**À dire en pointant ce passage :**
+
+On commence par garder les scénarios encore en vie. Le tilde inverse rappele : ceux qui sont déjà terminés ne doivent plus recevoir de paiement.
+
+### Écran 6.2
+
+**Montrer [strutu_engine.py, ligne 90](../strutu_engine.py#L90) — lignes 90 à 93.**
+
+```python
         if has_autocall and k < n_dates:
             autocall_now = actifs & (S_k >= K_auto_level)
         else:
             autocall_now = np.zeros(n_simulations, dtype=bool)
+```
 
+**À dire en pointant ce passage :**
+
+Si le rappel est activé, on teste sa barrière avant maturité. Sinon, aucun scénario n’est rappelé. Décocher la case fait donc aller le Phoenix jusqu’à la fin. k inférieur à n_dates réserve la dernière date au remboursement final.
+
+### Écran 6.3
+
+**Montrer [strutu_engine.py, ligne 95](../strutu_engine.py#L95) — lignes 95 à 95.**
+
+```python
         coupon_du = actifs & (S_k >= B_phoenix_level)
+```
 
+**À dire en pointant ce passage :**
+
+Le coupon a sa propre condition : le scénario doit être actif et au-dessus du seuil coupon. Ça reste vrai même quand on désactive le rappel : les coupons peuvent toujours être versés en cours de vie.
+
+### Écran 6.4
+
+**Montrer [strutu_engine.py, ligne 97](../strutu_engine.py#L97) — lignes 97 à 105.**
+
+```python
         coupon_periode = coupon_schedule[k - 1]
         if memory:
             # j'accumule le coupon de la période, et je paie tout le stock dès que c'est au-dessus
@@ -213,7 +306,31 @@ Dans le code, k < n_dates réserve le rappel aux dates avant maturité. La derni
             montant_coupon = np.where(coupon_du, coupon_periode, 0.0)
 ```
 
-**Ouvrir [strutu_engine.py, ligne 122](../strutu_engine.py#L122)** — lignes 122 à 127.
+**À dire en pointant ce passage :**
+
+On prend le coupon de la période. Avec mémoire, on l’ajoute au stock en attente. Si le coupon est dû, on paie ce stock, puis on le remet à zéro. Sans mémoire, on paie seulement le coupon courant. Par exemple, un premier coupon de 4 % manqué puis un deuxième favorable donnent 8 % avec mémoire, contre 4 % sans mémoire.
+
+### Écran 6.5
+
+**Montrer [strutu_engine.py, ligne 107](../strutu_engine.py#L107) — lignes 107 à 113.**
+
+```python
+        coupons_actualises += montant_coupon * actualisation
+        flux_actualises += montant_coupon * actualisation
+        # si rappel : je rends le nominal (1 = 100 %)
+        flux_actualises += np.where(autocall_now, 1.0 * actualisation, 0.0)
+
+        date_rappel[autocall_now] = k - 1
+        rappele = rappele | autocall_now
+```
+
+**À dire en pointant ce passage :**
+
+On actualise le coupon à sa date. En cas de rappel, on rend aussi le nominal. Puis on conserve les scénarios déjà rappelés et on ajoute ceux qui viennent de l’être.
+
+### Écran 6.6
+
+**Montrer [strutu_engine.py, ligne 122](../strutu_engine.py#L122) — lignes 122 à 127.**
 
 ```python
     remboursement_T = np.where(S_T >= B_pdi_level, 1.0, S_T / strike_reference)
@@ -224,31 +341,48 @@ Dans le code, k < n_dates réserve le rappel aux dates avant maturité. La derni
     flux_actualises += np.where(non_rappelees, remboursement_T * actualisation_T, 0.0)
 ```
 
-**Ordre à montrer :** activité → rappel activé ou non → coupons et mémoire → capital final et bonus. Le bonus est ajouté au remboursement final ; les coupons ont déjà été traités dans la boucle.
+**À dire en pointant ce passage :**
 
-## 7. Expliquer le Plain — Joseph
+À maturité, le capital vaut un si la protection est respectée, sinon le ratio du cours final sur la référence. Ensuite, ce bloc ajoute le bonus si un seuil est défini et atteint, et si le scénario n’a pas été rappelé. Avec une référence à 100, un seuil à 110 et un bonus de 5 %, finir à 115 ajoute 50 pour 1 000 investis. Le dernier coupon a déjà été traité dans la boucle : le bonus vient en plus. Enfin, on actualise ce remboursement final.
 
-**À l’écran :** strutu_engine.py : _flux_autocall.
+**Passage de parole :** « Joseph va montrer le Plain : il utilise les mêmes trajectoires, mais les coupons sont payés d’un coup. »
 
-Dans le Plain, on ne verse pas les coupons à chaque date. On attend la sortie du produit.
+## 7. Plain : déterminer le rappel et les coupons — Joseph
 
-Ici, rappel_du sélectionne les scénarios qui peuvent être rappelés. Pour ceux-là, on met de côté le montant des coupons et la date du paiement. Le coupon vaut coupon fois k+1, parce que k commence à zéro. Au deuxième constat, ça fait donc deux coupons : avec 4 %, on rend 100 % du capital plus 8 %.
+### Écran 7.1
 
-Les crochets permettent de modifier seulement les scénarios concernés. Et on les marque comme rappelés pour ne plus les payer ensuite.
-
-
-**Code à montrer — indications non destinées à être lues :**
-
-**Ouvrir [strutu_engine.py, ligne 296](../strutu_engine.py#L296)** — lignes 296 à 307.
+**Montrer [strutu_engine.py, ligne 296](../strutu_engine.py#L296) — lignes 296 à 297.**
 
 ```python
     for k in range(n_dates):
         au_dessus = prix[:, k + 1] >= K_auto * S0
+```
+
+**À dire en pointant ce passage :**
+
+On reprend les trajectoires du simulateur de Théo. Ici, k commence à zéro, mais la colonne zéro contient S0 : on lit donc le cours dans la colonne k+1. On le compare au seuil de rappel.
+
+### Écran 7.2
+
+**Montrer [strutu_engine.py, ligne 298](../strutu_engine.py#L298) — lignes 298 à 302.**
+
+```python
         if has_autocall:
             rappel_autorise = first_call_date is None or dates[k] >= first_call_date
             # La dernière observation relève du remboursement final, pas d'un rappel.
             if k < n_dates - 1 and rappel_autorise:
                 rappel_du = (~rappele) & au_dessus
+```
+
+**À dire en pointant ce passage :**
+
+Le rappel doit être activé, la première date autorisée doit être atteinte, et on doit être avant maturité. On ne garde ensuite que les scénarios encore actifs au-dessus du seuil.
+
+### Écran 7.3
+
+**Montrer [strutu_engine.py, ligne 303](../strutu_engine.py#L303) — lignes 303 à 307.**
+
+```python
                 coupons_payes[rappel_du] = coupon * (k + 1)
                 nombre_coupons[rappel_du] = k + 1
                 date_paiement[rappel_du] = dates[k]
@@ -256,20 +390,28 @@ Les crochets permettent de modifier seulement les scénarios concernés. Et on l
                 rappele[rappel_du] = True
 ```
 
-## 8. Désactiver le rappel — Joseph
+**À dire en pointant ce passage :**
 
-**À l’écran :** strutu_engine.py : has_autocall et coupon_final_du.
+Pour ces scénarios, on stocke les coupons accumulés et la date du paiement. Au deuxième constat, k+1 vaut deux : avec 4 %, ça fait 8 % de coupons. Les crochets modifient seulement les scénarios rappelés. On les marque ensuite comme terminés. La date stockée servira à l’actualisation.
 
-La case de rappel devient has_autocall dans le moteur. Si elle est décochée, on ne passe plus dans le bloc de rappel. Le produit reste donc jusqu’à maturité.
+## 8. Plain sans rappel : la condition finale — Joseph
 
-Par contre, on garde la condition finale des coupons. Avec six constats à 4 %, on reçoit 24 % si le seuil final est atteint, sinon aucun coupon. Un bon constat au début ne suffit pas à gagner un coupon. C’est bien le niveau final qui compte dans ce mode.
+### Écran 8.1
 
-Théo, tu peux préciser l’autre case, celle de la protection ?
+**Montrer [strutu_engine.py, ligne 376](../strutu_engine.py#L376) — lignes 376 à 377.**
 
+```python
+def analyse_autocall_plain(S0, r, q, sigma, obs_dates, K_auto, B_pdi, coupon,
+                            n_simulations=50000, first_call_date=None, seed=None, has_autocall=True):
+```
 
-**Code à montrer — indications non destinées à être lues :**
+**À dire en pointant ce passage :**
 
-**Ouvrir [strutu_engine.py, ligne 309](../strutu_engine.py#L309)** — lignes 309 à 314.
+La même fonction reçoit has_autocall. Par défaut, le rappel est actif. La case décochée transmet faux et on ne passe plus dans le bloc de rappel que je viens de montrer.
+
+### Écran 8.2
+
+**Montrer [strutu_engine.py, ligne 309](../strutu_engine.py#L309) — lignes 309 à 314.**
 
 ```python
     non_rappeles = ~rappele
@@ -280,27 +422,29 @@ Théo, tu peux préciser l’autre case, celle de la protection ?
     nombre_coupons[coupon_final_du] = n_dates
 ```
 
-**Ouvrir [strutu_engine.py, ligne 376](../strutu_engine.py#L376)** — lignes 376 à 377.
+**À dire en pointant ce passage :**
+
+On traite ensuite ceux qui arrivent à maturité. Si le cours final atteint le seuil, on attribue tous les coupons. Sinon, ils restent à zéro. Avec six constats à 4 %, ça fait 24 % ou aucun coupon. Un constat favorable au début ne suffit pas à acquérir un coupon.
+
+**Passage de parole :** « Théo va montrer la règle du capital : elle est indépendante du rappel et des coupons. »
+
+## 9. Le remboursement du capital — Théo
+
+### Écran 9.1
+
+**Montrer [strutu_engine.py, ligne 291](../strutu_engine.py#L291) — lignes 291 à 291.**
 
 ```python
-def analyse_autocall_plain(S0, r, q, sigma, obs_dates, K_auto, B_pdi, coupon,
-                            n_simulations=50000, first_call_date=None, seed=None, has_autocall=True):
+    remboursement = np.ones(n_simulations)
 ```
 
-## 9. Distinguer les deux cases — Théo
+**À dire en pointant ce passage :**
 
-**À l’écran :** strutu_engine.py : remboursement et perte_capital.
+Le remboursement commence à un pour chaque scénario, donc à cent pour cent du nominal.
 
-Oui, les deux cases sont indépendantes. Le rappel décide si on peut sortir avant la fin. La protection conditionnelle décide ce qu’on récupère à maturité.
+### Écran 9.2
 
-Le tableau remboursement commence à un : ça représente tout le nominal. Si le cours finit sous la barrière de protection, on remplace ce montant par S_T divisé par S0. Donc avec un départ à 100 et une arrivée à 50, on récupère la moitié du capital. À la barrière exactement, le nominal est remboursé.
-
-Si on désactive cette perte conditionnelle, le code rend toujours le nominal. Joseph, à partir de ces paiements, comment on obtient le prix aujourd’hui ?
-
-
-**Code à montrer — indications non destinées à être lues :**
-
-**Ouvrir [strutu_engine.py, ligne 316](../strutu_engine.py#L316)** — lignes 316 à 319.
+**Montrer [strutu_engine.py, ligne 316](../strutu_engine.py#L316) — lignes 316 à 319.**
 
 ```python
     perte_capital = np.zeros(n_simulations, dtype=bool)
@@ -309,44 +453,47 @@ Si on désactive cette perte conditionnelle, le code rend toujours le nominal. J
         remboursement[perte_capital] = S_T[perte_capital] / S0
 ```
 
-## 10. Calculer la valeur actuelle — Joseph
+**À dire en pointant ce passage :**
 
-**À l’écran :** strutu_engine.py : _analyse_autocall.
+Si une barrière est définie, on sélectionne les scénarios non rappelés strictement sous cette barrière. Pour eux, on remplace le nominal par S_T sur S0. Un départ à 100 et une arrivée à 50 donnent donc 50 % du capital. À la barrière exactement, le nominal reste entier. Si B_pdi vaut None, ce bloc ne s’exécute pas : le capital reste à un.
 
-On récupère les montants et les dates de paiement calculés juste avant. On additionne le capital et les coupons, puis on les multiplie par exp de moins r fois la date de paiement. C’est l’actualisation.
+**Passage de parole :** « Joseph, maintenant qu’on a les montants et leurs dates, comment on obtient le prix ? »
 
-Ensuite, np.mean fait la moyenne de tous les scénarios. C’est cette moyenne qui donne le prix. Le moteur travaille pour un nominal de un : 0,95 signifie 95 %, donc 950 pour 1 000 investis.
+## 10. Passer des flux au prix — Joseph
 
-Le capital est déjà dans ce calcul. On n’a donc pas à ajouter un zéro-coupon à côté.
+### Écran 10.1
 
-Juste après, on calcule l’erreur type et l’intervalle de confiance. Ça mesure la précision de la simulation, pas si toutes les hypothèses du modèle sont bonnes. Théo va maintenant relier ces résultats à ce qu’on voit à l’écran.
-
-
-**Code à montrer — indications non destinées à être lues :**
-
-**Ouvrir [strutu_engine.py, ligne 346](../strutu_engine.py#L346)** — lignes 346 à 351.
+**Montrer [strutu_engine.py, ligne 346](../strutu_engine.py#L346) — lignes 346 à 347.**
 
 ```python
     actualisation = np.exp(-r * res["date_paiement"])
     flux = (res["remboursement"] + res["coupons"]) * actualisation
-    if not np.all(np.isfinite(flux)):
-        raise ValueError("Flux actualisés non finis : vérifiez les paramètres.")
+```
+
+**À dire en pointant ce passage :**
+
+Dans res, on récupère les tableaux calculés juste avant. On additionne le capital et les coupons, puis on actualise chaque scénario à sa date de sortie avec exp de moins r fois t.
+
+### Écran 10.2
+
+**Montrer [strutu_engine.py, ligne 350](../strutu_engine.py#L350) — lignes 350 à 351.**
+
+```python
     valeur = float(np.mean(flux))
     erreur_type = float(np.std(flux, ddof=1) / np.sqrt(n_simulations))
 ```
 
-## 11. Lire les résultats — Théo
+**À dire en pointant ce passage :**
 
-**À l’écran :** Application et _analyse_autocall.
+np.mean fait la moyenne : c’est le prix pour un nominal de un. Si on obtient 0,95, ça représente 950 pour 1 000 investis. Le capital est déjà inclus, donc on n’ajoute pas un zéro-coupon à côté. La ligne suivante mesure la précision de cette moyenne, pas l’incertitude sur toutes les hypothèses du modèle.
 
-Le moteur renvoie aussi les statistiques des mêmes scénarios. Par exemple, date_rappel égal à moins un, ça veut dire jamais rappelé. La moyenne de cette condition donne la proportion qui arrive à maturité.
+**Passage de parole :** « Théo va vous montrer les autres résultats tirés de ces mêmes scénarios. »
 
-La probabilité de perte concerne le capital, avant les coupons. Et la marge affichée, c’est simplement cent moins le prix : ce n’est pas un bénéfice net.
+## 11. Calculer les indicateurs — Théo
 
+### Écran 11.1
 
-**Code à montrer — indications non destinées à être lues :**
-
-**Ouvrir [strutu_engine.py, ligne 363](../strutu_engine.py#L363)** — lignes 363 à 368.
+**Montrer [strutu_engine.py, ligne 363](../strutu_engine.py#L363) — lignes 363 à 368.**
 
 ```python
         "proba_rappel_par_date": [float(np.mean(res["date_rappel"] == k)) for k in range(len(dates))],
@@ -357,38 +504,52 @@ La probabilité de perte concerne le capital, avant les coupons. Et la marge aff
         "coupons_moyens_actualises": float(np.mean(res["coupons"] * actualisation)),
 ```
 
-## 12. Relier le calcul à la page — Théo
+**À dire en pointant ce passage :**
 
-**À l’écran :** main.py : api_phoenix et api_autocall ; index.html : fetch.
+Ici, on rassemble les statistiques. Moins un dans date_rappel veut dire jamais rappelé. La moyenne de cette condition donne la probabilité de maturité : vrai compte pour un, faux pour zéro. Pour la durée moyenne, on moyenne les dates de paiement. Les coupons sont eux aussi moyennés après actualisation. On ne simule pas de nouveaux cours pour chaque indicateur.
 
-On revient dans main.py. La page envoie les paramètres ici. On vérifie les données et on convertit les unités : par exemple, 25 dans le formulaire devient 0,25 pour sigma.
+## 12. Relier le moteur au navigateur — Théo
 
-Pour le Plain, on lit aussi has_autocall et on le transmet à la fonction que Joseph a montrée. Les deux étoiles devant arguments servent à passer les valeurs du dictionnaire comme paramètres nommés.
+### Écran 12.1
 
-Après le calcul, on renvoie les résultats en JSON. Dans le HTML, fetch récupère la réponse, puis les fonctions d’affichage mettent à jour les indicateurs et le graphique. Le JavaScript gère donc les échanges et l’affichage ; les calculs financiers restent en Python.
-
-**Code à montrer — indications non destinées à être lues :**
-
-**Ouvrir [main.py, ligne 232](../main.py#L232)** — lignes 232 à 232.
+**Montrer [main.py, ligne 232](../main.py#L232) — lignes 232 à 232.**
 
 ```python
         sigma = float(data["sigma"]) / 100
 ```
 
-**Ouvrir [main.py, ligne 378](../main.py#L378)** — lignes 378 à 378.
+**À dire en pointant ce passage :**
+
+Dans la route Phoenix, on récupère sigma et on divise par cent. Le formulaire donne 25 ; le moteur doit recevoir 0,25. La route Plain fait la même conversion.
+
+### Écran 12.2
+
+**Montrer [main.py, ligne 378](../main.py#L378) — lignes 378 à 378.**
 
 ```python
         res = analyse_autocall_plain(**arguments, first_call_date=premiere, has_autocall=has_autocall)
 ```
 
-**Ouvrir [main.py, ligne 297](../main.py#L297)** — lignes 297 à 298.
+**À dire en pointant ce passage :**
+
+Dans la route Plain, cet appel lance l’analyse présentée par Joseph. Les deux étoiles transmettent le dictionnaire comme paramètres nommés. On transmet aussi la date de premier rappel et la case has_autocall.
+
+### Écran 12.3
+
+**Montrer [main.py, ligne 297](../main.py#L297) — lignes 297 à 298.**
 
 ```python
             "prix": round(res["prix"] * nominal, 4),
             "prix_pct": pct(res["prix"]),
 ```
 
-**Ouvrir [templates/index.html, ligne 729](../templates/index.html#L729)** — lignes 729 à 732.
+**À dire en pointant ce passage :**
+
+Pour le Phoenix, cette réponse montre les deux affichages : le prix normalisé fois le nominal donne le montant, et pct le transforme en pourcentage. Le Plain renvoie lui aussi ces deux informations.
+
+### Écran 12.4
+
+**Montrer [templates/index.html, ligne 729](../templates/index.html#L729) — lignes 729 à 732.**
 
 ```javascript
       const response=await fetch('/api/autocall',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:controller.signal});
@@ -397,46 +558,51 @@ Après le calcul, on renvoie les résultats en JSON. Dans le HTML, fetch récup�
       afficherAutocall(data);status.textContent='Calcul terminé.';
 ```
 
-## 13. Faire la démonstration du Plain — Joseph
+**À dire en pointant ce passage :**
 
-**À l’écran :** Application : Plain.
+Dans le JavaScript, fetch envoie les paramètres au serveur. On lit sa réponse JSON et, si elle est correcte, afficherAutocall met les résultats à l’écran. Les calculs financiers restent en Python. On va maintenant montrer ce parcours dans l’application.
 
-On prend trois ans, des constats semestriels et 4 % de coupon par constat. On garde les mêmes paramètres et la même graine pour comparer.
+## 13. Manipuler les options dans l’application — Théo puis Joseph
 
-Je calcule d’abord avec rappel. Puis je décoche seulement cette case et je recalcule. Sans rappel, on doit retrouver trois ans de durée moyenne, cent pour cent à maturité et aucun rappel.
+### Écran 13.1
 
-Si le seuil final est atteint, les six coupons font 24 %. Pour 1 000 investis, ça donne 1 240 à maturité. Ce montant futur et la valeur actuelle affichée ne sont pas la même chose.
+**Montrer : l’application.**
 
+**À dire en pointant ce passage :**
 
-**Code à montrer — indications non destinées à être lues :**
+Théo : Je montre d’abord les options du Phoenix. Sans rappel, les coupons restent périodiques et le produit va jusqu’à maturité. Pour le bonus, on renseigne un seuil et un montant ; il est ajouté à la fin si sa condition est remplie et si le produit est encore en vie.
 
-**Ouvrir [templates/index.html, ligne 253](../templates/index.html#L253)** — lignes 253 à 253.
+Joseph : Pour le Plain, on prend trois ans, des constats semestriels et 4 % par constat. On calcule avec rappel, puis sans rappel, en gardant la même graine. Sans rappel, on doit voir trois ans de durée moyenne, cent pour cent à maturité et aucun rappel. Si le seuil final est atteint, les six coupons font 24 %, donc 1 240 versés pour 1 000 investis. Ce paiement futur n’est pas le prix aujourd’hui.
 
-```html
-      <label class="check"><input id="ac-plain-autocall" type="checkbox" checked> Remboursement anticipé possible (autocall)</label>
-```
+## 14. Montrer un test concret — Théo
 
-**Ouvrir [templates/index.html, ligne 724](../templates/index.html#L724)** — lignes 724 à 724.
+### Écran 14.1
 
-```javascript
-    if(kind==='plain'){payload.has_autocall=$(prefix+'-autocall').checked;payload.first_call_months=payload.has_autocall?get('first'):0;}
-```
-
-**Pendant la vidéo :** privilégier ici la page de l’application ; le HTML est un repère complémentaire si vous voulez montrer la commande correspondante.
-
-## 15. Terminer sur les limites — Joseph
-
-**À l’écran :** Application : résultats.
-
-Le modèle reste simplifié : le taux, le dividende et la volatilité sont constants. On ne prend pas en compte le smile, les frais de couverture ni le défaut de l’émetteur. Et les probabilités sont celles du modèle risque-neutre, pas des prévisions. Pour aller plus loin, on pourrait utiliser une courbe de taux et calibrer la volatilité sur les options.
-
-
-**Code à montrer — indications non destinées à être lues :**
-
-**Ouvrir [strutu_engine.py, ligne 39](../strutu_engine.py#L39)** — lignes 39 à 40.
+**Montrer [tests/test_engine.py, ligne 23](../tests/test_engine.py#L23) — lignes 23 à 31.**
 
 ```python
-        croissance = (r - q - sigma**2 / 2) * dt
-        choc = sigma * np.sqrt(dt) * Z
+    def test_final_condition_not_intermediate_acquisition(self):
+        paths=np.array([[100,110,80],[100,90,110],[100,120,50]],float)
+        with patch.object(engine,'simulate_observation_dates',return_value=paths):
+            result=engine.analyse_autocall_plain(100,0,0,.2,[1,2],1,.6,.04,3,has_autocall=False)
+        self.assertAlmostEqual(result['prix'],(1+1.08+.5)/3)
+        self.assertEqual(result['proba_rappel_par_date'],[0,0])
+        self.assertEqual(result['proba_maturite'],1)
+        self.assertEqual(result['duree_de_vie_moyenne'],2)
+        self.assertAlmostEqual(result['coupons_moyens_actualises'],.08/3)
 ```
+
+**À dire en pointant ce passage :**
+
+Ce test donne directement trois trajectoires au moteur. La première passe au-dessus du seuil puis finit à 80 : aucun coupon. La deuxième finit à 110 : deux coupons de 4 %. La troisième finit à 50 : perte de la moitié du principal. La moyenne attendue est donc un, plus un virgule zéro huit, plus zéro virgule cinq, le tout divisé par trois. Les assertions vérifient aussi qu’il n’y a aucun rappel. Ça permet de contrôler la règle sans dépendre d’un tirage aléatoire.
+
+## 15. Conclure — Joseph
+
+### Écran 15.1
+
+**Montrer : l’application.**
+
+**À dire en pointant ce passage :**
+
+On a donc suivi les cours, la volatilité, les trajectoires, les paiements et leur actualisation. Le modèle reste simplifié : taux, dividende et volatilité constants, sans smile ni défaut de l’émetteur. Les probabilités sont celles du modèle risque-neutre. Pour aller plus loin, on pourrait utiliser une courbe de taux et une volatilité calibrée sur les options.
 
