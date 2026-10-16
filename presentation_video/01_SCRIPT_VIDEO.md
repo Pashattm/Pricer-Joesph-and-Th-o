@@ -429,42 +429,6 @@ Si le seuil final est atteint, les six coupons font 24 %. Pour 1 000 investis, �
 
 **Pendant la vidéo :** privilégier ici la page de l’application ; le HTML est un repère complémentaire si vous voulez montrer la commande correspondante.
 
-## 14. Montrer les tests — Théo
-
-**À l’écran :** tests/test_api.py et tests/test_engine.py.
-
-On a aussi des tests sur des cas dont on connaît les paiements. On vérifie les conversions, les barrières et les erreurs de paramètres. Il y a notamment un cas qui vérifie qu’en mode sans rappel, un constat intermédiaire favorable ne crée pas de coupon acquis. Les quatorze tests passent dans cette version.
-
-
-**Code à montrer — indications non destinées à être lues :**
-
-**Ouvrir [tests/test_engine.py, ligne 23](../tests/test_engine.py#L23)** — lignes 23 à 31.
-
-```python
-    def test_final_condition_not_intermediate_acquisition(self):
-        paths=np.array([[100,110,80],[100,90,110],[100,120,50]],float)
-        with patch.object(engine,'simulate_observation_dates',return_value=paths):
-            result=engine.analyse_autocall_plain(100,0,0,.2,[1,2],1,.6,.04,3,has_autocall=False)
-        self.assertAlmostEqual(result['prix'],(1+1.08+.5)/3)
-        self.assertEqual(result['proba_rappel_par_date'],[0,0])
-        self.assertEqual(result['proba_maturite'],1)
-        self.assertEqual(result['duree_de_vie_moyenne'],2)
-        self.assertAlmostEqual(result['coupons_moyens_actualises'],.08/3)
-```
-
-**Ouvrir [tests/test_api.py, ligne 65](../tests/test_api.py#L65)** — lignes 65 à 72.
-
-```python
-    def test_toggle(self):
-        d=self.call(has_autocall=False,first_call_months='ignored').json
-        self.assertEqual(d['prix'],1160)
-        self.assertEqual(d['proba_maturite_pct'],100)
-        self.assertEqual(d['proba_rappel_par_date_pct'],[0,0,0,0])
-        self.assertIsNone(d['niveaux']['autocall'])
-        self.assertFalse(d['has_autocall'])
-        self.assertEqual(self.call(has_autocall='invalid').status_code,400)
-```
-
 ## 15. Terminer sur les limites — Joseph
 
 **À l’écran :** Application : résultats.
