@@ -30,7 +30,7 @@ Ensuite, np.std calcule leur dispersion. Le ddof=1, c’est pour utiliser le nom
 
 La fonction renvoie un décimal : 0,25, c’est 25 %. Il faut au moins trois cours pour ce calcul. Dans market data, on en demande vingt : c’est un minimum supplémentaire pour l’application.
 
-Cette volatilité va devenir sigma dans le simulateur. Théo, tu peux montrer où elle intervient ?
+Cette volatilité va devenir sigma dans le simulateur.
 
 ## 5. Simuler les cours — Théo
 
