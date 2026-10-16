@@ -6,7 +6,7 @@ Version plus naturelle : les phrases servent de repères. Vous pouvez changer le
 
 **À l’écran :** Application.
 
-On va vous présenter notre pricer de produits structurés. On a deux produits : le Phoenix et le Plain, avec ou sans rappel. On va vous montrer comment on passe des données de marché au prix, puis faire un calcul dans l’application.
+On va vous présenter notre pricer de produits structurés. On a deux produits : le Phoenix et le Plain. On va vous montrer comment on passe des données de marché au prix, puis faire un calcul dans l’application.
 
 ## 2. Montrer les fichiers — Théo
 
